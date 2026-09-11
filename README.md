@@ -1,6 +1,6 @@
 # 🔐 CertWatch — Мониторинг SSL-сертификатов
 
-CLI-инструмент для проверки срока действия SSL-сертификатов с поддержкой Docker.
+CLI-инструмент для проверки срока действия SSL-сертификатов с поддержкой Docker и GitHub Container Registry.
 
 ## ✨ Возможности
 
@@ -9,27 +9,48 @@ CLI-инструмент для проверки срока действия SSL
 - 🚨 Различает типы ошибок: просрочен, самоподписан, hostname mismatch
 - 💾 Хранение списка доменов локально
 - 🐳 Работа в Docker-контейнере
+- 📦 Готовый образ в GHCR
 - 📊 Exit-код для интеграции с CI/CD
 
-## 🚀 Быстрый старт (Docker)
+## 🚀 Быстрый старт (из GHCR — рекомендуемый способ)
+
+Не нужно ничего собирать — образ уже готов:
 
 ```bash
+# Скачать образ
+docker pull ghcr.io/ostenvrn/certwatch:latest
+
+# Добавить домен
+docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest add github.com
+
+# Проверить все домены
+docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest check
+
+# Проверить один домен
+docker run --rm ghcr.io/ostenvrn/certwatch:latest check google.com
+
+    Важно: флаг -v "$PWD/data:/app/data" монтирует твою локальную папку data/ внутрь контейнера, чтобы список доменов сохранялся между запусками.
+
+🐳 Локальная сборка (для разработки)
+bash
+
 # Сборка образа
-docker build -t certwatch .
+docker build -t certwatch:latest .
 
-# Добавление домена
-docker run --rm -v "$PWD/data:/app/data" certwatch add github.com
-
-# Проверка всех доменов
-docker run --rm -v "$PWD/data:/app/data" certwatch check
+# Запуск
+docker run --rm -v "$PWD/data:/app/data" certwatch:latest check
 
 🛠 Локальный запуск (Python)
 bash
 
+# Виртуальное окружение
 python3 -m venv venv
 source venv/bin/activate
+
+# Зависимости
 pip install -r requirements.txt
 
+# Использование
 python3 src/certwatch.py add github.com
 python3 src/certwatch.py check
 
@@ -64,4 +85,22 @@ self-signed.badssl.com         🔓 САМОПОДПИСАН —            —
 
     python-dateutil — парсинг дат
 
-    Docker — контейнеризация
+    Docker + Buildx — контейнеризация
+
+    GitHub Actions — CI/CD
+
+    GHCR — хранение образов
+
+🔧 CI/CD
+
+При каждом пуше в main GitHub Actions автоматически:
+
+    Собирает Docker-образ
+
+    Публикует его в ghcr.io/ostenvrn/certwatch
+
+    Создаёт теги latest и main
+
+📄 Лицензия
+
+MIT
