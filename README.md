@@ -133,5 +133,9 @@ A: Да. Используй check <домен> — например, check googl
 Q: Где хранится список доменов?
 A: В файле data/domains.txt на твоей машине. Он не попадает в Git и не уходит в Docker-образ.
 
+🔧 Автоматизация (для автора)
+
+При каждом пуше в `main` GitHub Actions автоматически собирает и публикует Docker-образ в [GHCR](https://github.com/Ostenvrn/certwatch/pkgs/container/certwatch). Пользователи всегда получают свежую версию без ручной сборки.
+
 📄 Лицензия
 MIT
