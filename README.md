@@ -59,8 +59,38 @@ python3 src/certwatch.py check
 add <домен>	Добавить домен в мониторинг
 remove <домен>	Удалить домен
 list	Показать список доменов
-check	Проверить все домены
-check <домен>	Проверить один домен
+check	Проверить ВСЕ домены из списка
+check <домен>	Проверить ОДИН домен без сохранения
+🎯 Как это работает
+
+CertWatch не сканирует всю систему и не ищет сертификаты автоматически.
+Ты сам добавляешь домены в мониторинг, а потом проверяешь их.
+Пошаговый пример
+bash
+
+# 1. Добавляем домены (можно добавлять сколько угодно)
+docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest add mysite.ru
+docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest add api.mysite.ru
+docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest add blog.mysite.ru
+
+# 2. Смотрим список добавленных доменов
+docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest list
+
+# 3. Проверяем ВСЕ домены из списка
+docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest check
+
+# 4. Или проверяем ОДИН домен без сохранения в список
+docker run --rm ghcr.io/ostenvrn/certwatch:latest check google.com
+
+Где хранится список
+
+Список доменов хранится в файле data/domains.txt на твоей машине
+(он не попадает в Docker-образ и не публикуется в Git).
+
+    Флаг -v "$PWD/data:/app/data" обязателен — он монтирует твою локальную папку внутрь контейнера,
+    чтобы список сохранялся между запусками.
+    Без него каждый запуск будет видеть пустой список.
+
 📸 Пример вывода
 text
 
@@ -101,6 +131,19 @@ self-signed.badssl.com         🔓 САМОПОДПИСАН —            —
 
     Создаёт теги latest и main
 
+❓ FAQ
+
+Q: CertWatch проверит все мои сертификаты автоматически?
+A: Нет. Ты сам добавляешь домены через add. Инструмент проверяет только то, что в списке.
+
+Q: Что будет, если запустить check без -v?
+A: Контейнер увидит пустой список и скажет 📭 Список доменов пуст. Флаг -v обязателен.
+
+Q: Можно ли проверить домен, не добавляя его в список?
+A: Да. Используй check <домен> — например, check google.com.
+
+Q: Где хранится список доменов?
+A: В файле data/domains.txt на твоей машине. Он не попадает в Git и не уходит в Docker-образ.
 📄 Лицензия
 
 MIT
