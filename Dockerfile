@@ -16,7 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем остальной код
 COPY src/ ./src/
-COPY data/ ./data/
+
+# Создаём папку для данных (volume подмонтируется сюда)
+RUN mkdir -p /app/data
 
 # Делаем скрипт исполняемым
 RUN chmod +x src/certwatch.py
