@@ -1,8 +1,8 @@
-# 🔐 CertWatch — Мониторинг SSL-сертификатов
+🔐 CertWatch — Мониторинг SSL-сертификатов
 
 CLI-инструмент для проверки срока действия SSL-сертификатов с поддержкой Docker и GitHub Container Registry.
 
-## ✨ Возможности
+✨ Возможности
 
 - ✅ Проверка срока действия SSL-сертификатов
 - 🎨 Красивый вывод в терминале (таблица с цветами)
@@ -12,45 +12,44 @@ CLI-инструмент для проверки срока действия SSL
 - 📦 Готовый образ в GHCR
 - 📊 Exit-код для интеграции с CI/CD
 
-## 🚀 Быстрый старт (из GHCR — рекомендуемый способ)
+🚀 Быстрый старт (из GHCR — рекомендуемый способ)
 
 Не нужно ничего собирать — образ уже готов:
 
 ```bash
-# Скачать образ
+
+Скачать образ
 docker pull ghcr.io/ostenvrn/certwatch:latest
 
-# Добавить домен
+Добавить домен
 docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest add github.com
 
-# Проверить все домены
+Проверить все домены
 docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest check
 
-# Проверить один домен
+Проверить один домен
 docker run --rm ghcr.io/ostenvrn/certwatch:latest check google.com
 
     Важно: флаг -v "$PWD/data:/app/data" монтирует твою локальную папку data/ внутрь контейнера, чтобы список доменов сохранялся между запусками.
 
 🐳 Локальная сборка (для разработки)
-bash
 
-# Сборка образа
+Сборка образа
 docker build -t certwatch:latest .
 
-# Запуск
+Запуск
 docker run --rm -v "$PWD/data:/app/data" certwatch:latest check
 
-🛠 Локальный запуск (Python)
-bash
+🛠 Локальный запуск 
 
-# Виртуальное окружение
+Виртуальное окружение
 python3 -m venv venv
 source venv/bin/activate
 
-# Зависимости
+Зависимости
 pip install -r requirements.txt
 
-# Использование
+Использование
 python3 src/certwatch.py add github.com
 python3 src/certwatch.py check
 
@@ -68,18 +67,18 @@ CertWatch не сканирует всю систему и не ищет сер�
 Пошаговый пример
 bash
 
-# 1. Добавляем домены (можно добавлять сколько угодно)
+1. Добавляем домены (можно добавлять сколько угодно)
 docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest add mysite.ru
 docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest add api.mysite.ru
 docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest add blog.mysite.ru
 
-# 2. Смотрим список добавленных доменов
+2. Смотрим список добавленных доменов
 docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest list
 
-# 3. Проверяем ВСЕ домены из списка
+3. Проверяем ВСЕ домены из списка
 docker run --rm -v "$PWD/data:/app/data" ghcr.io/ostenvrn/certwatch:latest check
 
-# 4. Или проверяем ОДИН домен без сохранения в список
+4. Или проверяем ОДИН домен без сохранения в список
 docker run --rm ghcr.io/ostenvrn/certwatch:latest check google.com
 
 Где хранится список
@@ -92,7 +91,6 @@ docker run --rm ghcr.io/ostenvrn/certwatch:latest check google.com
     Без него каждый запуск будет видеть пустой список.
 
 📸 Пример вывода
-text
 
 ══════════════════════════════════════════════════════════════════════
 📜 CERT WATCH — Статус SSL-сертификатов
@@ -121,16 +119,6 @@ self-signed.badssl.com         🔓 САМОПОДПИСАН —            —
 
     GHCR — хранение образов
 
-🔧 CI/CD
-
-При каждом пуше в main GitHub Actions автоматически:
-
-    Собирает Docker-образ
-
-    Публикует его в ghcr.io/ostenvrn/certwatch
-
-    Создаёт теги latest и main
-
 ❓ FAQ
 
 Q: CertWatch проверит все мои сертификаты автоматически?
@@ -144,6 +132,6 @@ A: Да. Используй check <домен> — например, check googl
 
 Q: Где хранится список доменов?
 A: В файле data/domains.txt на твоей машине. Он не попадает в Git и не уходит в Docker-образ.
-📄 Лицензия
 
+📄 Лицензия
 MIT
