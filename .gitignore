@@ -1,5 +1,52 @@
+# ============================================
+# COMMIT: chore(git): expand .gitignore
+# Причина: покрытие было частичным.
+# Решение: полный список того, что не идёт в репозиторий.
+# ============================================
+
+# --- Виртуальные окружения ---
 venv/
+.venv/
+env/
+ENV/
+
+# --- Python-мусор ---
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- Тесты и кэши ---
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# --- Секреты ---
 .env
-data/domains.txt
+.env.*
+!.env.example
+
+# --- Данные (кроме примеров) ---
+data/
+!data/.gitkeep
+
+# --- IDE и OS ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Логи ---
+*.log
+logs/

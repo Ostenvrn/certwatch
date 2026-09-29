@@ -1,10 +1,69 @@
-venv/
-__pycache__/
-*.pyc
-*.pyo
+# ============================================
+# COMMIT: chore(docker): expand .dockerignore
+# Причина: покрытие было частичным — data/domains.txt вместо всей data/,
+#          не было tests/, .github/, кэшей линтеров.
+# Решение: полный whitelist того, что НЕ нужно в образе.
+# ============================================
+
+# --- Git ---
 .git/
 .gitignore
+.gitattributes
+.github/
+
+# --- Виртуальные окружения ---
+venv/
+.venv/
+env/
+ENV/
+
+# --- Python-мусор ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- Тесты и кэши ---
+tests/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# --- Секреты ---
 .env
-data/domains.txt
+.env.*
+!.env.example
+
+# --- Данные (кроме примеров) ---
+data/
+!data/.gitkeep
+
+# --- Документация ---
 *.md
-README.md
+!README.md
+
+# --- Docker ---
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# --- IDE и OS ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Логи ---
+*.log
+logs/

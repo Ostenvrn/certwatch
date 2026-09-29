@@ -1,30 +1,60 @@
-# Легковесный базовый образ Python
-FROM python:3.12-slim
+# ============================================
+# COMMIT: refactor(docker): multi-stage build
+# Дата: 2026-09-29
+# Причина: единый этап сборки тащил в образ pip-кэш и компиляторы.
+# Решение: builder-этап для зависимостей + чистый runtime-этап.
+# Результат: меньше размер образа, меньше поверхности для атак.
+# ============================================
 
-# Метаданные
-LABEL maintainer="Ostenvrn"
-LABEL description="CertWatch — мониторинг SSL-сертификатов"
+# ============================================
+# COMMIT: fix(security): run as non-root user
+# Причина: контейнер запускался от root — замечание наставника.
+# Решение: useradd appuser (UID 10001) + USER appuser перед ENTRYPOINT.
+# Результат: whoami внутри контейнера = appuser.
+# ============================================
 
-# Рабочая директория внутри контейнера
+# --- Этап 1: builder (зависимости) ---
+FROM python:3.12-slim AS builder
+
 WORKDIR /app
 
-# Сначала копируем только requirements — так Docker кэширует слои
+# Сначала только requirements.txt — кэш работает
 COPY requirements.txt .
 
-# Устанавливаем зависимости
-RUN pip install --no-cache-dir -r requirements.txt
+# Ставим пакеты в ~/.local — потом скопируем в runtime
+RUN pip install --no-cache-dir --user -r requirements.txt
 
-# Копируем остальной код
-COPY src/ ./src/
+# --- Этап 2: runtime (финальный образ) ---
+FROM python:3.12-slim
 
-# Создаём папку для данных (volume подмонтируется сюда)
-RUN mkdir -p /app/data
+LABEL maintainer="Ostenvrn" \
+      description="CertWatch — мониторинг SSL-сертификатов" \
+      org.opencontainers.image.source="https://github.com/Ostenvrn/certwatch"
 
-# Делаем скрипт исполняемым
+# Non-root пользователь
+RUN useradd --create-home --uid 10001 --shell /bin/bash appuser
+
+WORKDIR /app
+
+# Копируем зависимости из builder
+COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
+
+ENV PATH=/home/appuser/.local/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Копируем код с владельцем appuser
+COPY --chown=appuser:appuser src/ ./src/
+
+# Папка для данных — сразу с владельцем
+RUN mkdir -p /app/data && chown appuser:appuser /app/data
+
+# Скрипт исполняемый
 RUN chmod +x src/certwatch.py
 
-# Точка входа: запускаем certwatch
-ENTRYPOINT ["python3", "src/certwatch.py"]
+# Переключаемся на non-root
+USER appuser
 
-# По умолчанию — команда check
+# Точка входа
+ENTRYPOINT ["python", "src/certwatch.py"]
 CMD ["check"]
